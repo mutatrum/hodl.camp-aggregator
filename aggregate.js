@@ -1,3 +1,5 @@
+require('log-timestamp');
+const cron = require('node-cron');
 const fs = require('fs');
 const Client = require('ftp');
 
@@ -6,15 +8,20 @@ const coinmetrics = require('./coinmetrics.js');
 const quandl = require('./quandl.js');
 const config = require('./config.js');
 
-(async function () {
-  console.log(`started ${new Date().toISOString()}`);
+(function () {
+  console.log('init')
+  cron.schedule('0 0 3 * * *', () => onSchedule());
+})();
+
+async function onSchedule() {
+  console.log('start');
   var result = new Object();
 
   result.halvings = await halvings.getHalvings(config.bitcoin_rpc);
 
   console.log(`halvings: ${result.halvings.length} records`);
   
-  var bitcoin = await coinmetrics.getBitcoin()
+  var bitcoin = await coinmetrics.getBitcoin();
   
   result.bitcoin = bitcoin.prices;
   result.since = bitcoin.since;
@@ -38,7 +45,7 @@ const config = require('./config.js');
       client.put('data.json', 'httpdocs/data.json', function(err) {
         if (err) throw err;
         client.end();
-        console.log(`finished ${new Date().toISOString()}`);
+        console.log('done');
       });
     }).on('error', function(error) {
       console.log(`error: ${error}`);
@@ -47,4 +54,4 @@ const config = require('./config.js');
     });
     client.connect(ftp);
   });
-})();
+}
