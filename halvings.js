@@ -21,19 +21,39 @@ function formatDate(time) {
 
 async function getHalvings(config) {
 
+  const quarter = 210000 / 4;
+
   bitcoin_rpc.init(config.host, config.port, config.user, config.password);
   bitcoin_rpc.setTimeout(1000);
 
   var result = new Array();
-  var blockChainInfo = await call('getblockchaininfo');
+
+  var currentblockheight = await call('getblockcount');
+
+  console.log(`block height ${currentblockheight}`);
   
-  for(var height = 0; height< blockChainInfo.blocks; height += (210000 / 4)) {
+  for(var height = 0; height < currentblockheight; height += quarter) {
+    
     var blockHash = await call('getblockhash', [height]);
     
     var block = await call('getblock', [blockHash]);
     
-    result.push(formatDate(block.time));
+    result.push(formatDate(block.mediantime));
   }
+  
+  var currentblockhash = await call('getblockhash', [currentblockheight]);
+  var currentblock = await call('getblock', [currentblockhash]);
+  var halvingblockheight = Math.ceil(currentblockheight / quarter ) * quarter;
+  var blockheightdelta = halvingblockheight - currentblockheight;
+  var previousblockheight = currentblockheight - blockheightdelta;
+  var previousblockhash = await call('getblockhash', [previousblockheight]);
+  var previousblock = await call('getblock', [previousblockhash]);
+  var deltatime = currentblock.mediantime - previousblock.mediantime;
+  var halving = formatDate(currentblock.mediantime + deltatime);
+  
+  console.log(`next halving quarter ${halving}`);
+  
+  result.push(halving);
   
   return result;
 }
