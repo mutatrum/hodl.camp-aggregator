@@ -34,7 +34,7 @@ async function onSchedule() {
   
   console.log(`inflation: ${Object.keys(result.inflation).length} records`);
   
-  result.gold = await quandl.getGold(result.since, result.bitcoin.length);
+  result.gold = await quandl.getGold(config.quandl, result.since, result.bitcoin.length);
   
   console.log(`gold: ${result.gold.length} records`);
 

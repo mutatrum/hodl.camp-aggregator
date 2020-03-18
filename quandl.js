@@ -8,6 +8,10 @@ function process(body, since, count) {
   
   var content = JSON.parse(body);
   
+  if (!content.dataset_data) {
+    console.log(content);
+  }
+  
   var entries = content.dataset_data.data.reverse();
   
   var data = entries.reduce((obj, item) => {
@@ -36,9 +40,9 @@ function formatDate(date) {
   return date.getFullYear().toString() + '-' + (date.getMonth() + 1).toString().padStart(2, '0') + '-' + date.getDate().toString().padStart(2, '0');
 }
 
-function getGold(since, count) {
+function getGold(config, since, count) {
   return new Promise(function(resolve, reject) {
-    https.get(url + since, { headers : { "accept" : "application/json" }}, res => {
+    https.get(url + since + '&api_key=' + config.key, { headers : { "accept" : "application/json" }}, res => {
       let body = "";
       res.on("data", data => {
         body += data;

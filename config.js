@@ -9,5 +9,8 @@ module.exports = {
     host: '',
     user: '',
     password: ''
+  },
+  quandl: {
+    key: ''
   }
 }
