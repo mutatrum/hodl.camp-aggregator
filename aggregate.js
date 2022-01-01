@@ -8,8 +8,10 @@ const inflation = require('./inflation.js');
 const coinmetrics = require('./coinmetrics.js');
 const quandl = require('./quandl.js');
 const config = require('./config.js');
+const { getSystemErrorMap } = require('util');
 
 (function () {
+  onSchedule();
   console.log('init')
   cron.schedule('0 0 3 * * *', () => onSchedule());
 })();

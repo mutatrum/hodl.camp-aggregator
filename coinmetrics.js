@@ -9,7 +9,7 @@ function process(body) {
 
   result.since = body.data[0].time.substring(0,10);
 
-  result.prices = body.data.map(entry => Number(entry.PriceUSD).toFixed(4));
+  result.prices = body.data.map(entry => Number(Number(entry.PriceUSD).toFixed(4)));
   
   return result;
 }
