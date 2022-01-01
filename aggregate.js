@@ -11,7 +11,6 @@ const config = require('./config.js');
 const { getSystemErrorMap } = require('util');
 
 (function () {
-  onSchedule();
   console.log('init')
   cron.schedule('0 0 3 * * *', () => onSchedule());
 })();
@@ -23,9 +22,9 @@ async function onSchedule() {
   result.halvings = await halvings.getHalvings(config.bitcoin_rpc);
 
   console.log(`halvings: ${result.halvings.length} records`);
-  
+
   var bitcoin = await coinmetrics.getBitcoin();
-  
+
   result.bitcoin = bitcoin.prices;
   result.since = bitcoin.since;
 
@@ -33,11 +32,11 @@ async function onSchedule() {
   console.log(`bitcoin: ${result.bitcoin.length} records`);
 
   result.inflation = await inflation.getInflation(result.halvings[0]);
-  
+
   console.log(`inflation: ${Object.keys(result.inflation).length} records`);
-  
+
   result.gold = await quandl.getGold(config.quandl, result.since, result.bitcoin.length);
-  
+
   console.log(`gold: ${result.gold.length} records`);
 
   fs.writeFile('data.json', JSON.stringify(result), function (err) {
