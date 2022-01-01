@@ -2,16 +2,14 @@ exports.getBitcoin = getBitcoin;
 
 const https = require("https");
 
-const url = "https://coinmetrics.io/newdata/split/btc_PriceUSD.txt";
+const url = "https://community-api.coinmetrics.io/v4/timeseries/asset-metrics?page_size=10000&metrics=PriceUSD&assets=btc";
 
 function process(body) {
   var result = new Object();
 
-  var lines = body.split('\n');
+  result.since = body.data[0].time.substring(0,10);
 
-  result.since = lines[0];
-  
-  result.prices = lines.slice(2).map(price => Number(Number(price).toFixed(4)));
+  result.prices = body.data.map(entry => Number(entry.PriceUSD).toFixed(4));
   
   return result;
 }
@@ -25,7 +23,7 @@ function getBitcoin() {
         body += data;
       });
       res.on("end", () => {
-        resolve(process(body));
+        resolve(process(JSON.parse(body)));
       });
     });
   });
