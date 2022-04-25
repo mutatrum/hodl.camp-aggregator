@@ -1,14 +1,12 @@
 require('log-timestamp');
 const cron = require('node-cron');
 const fs = require('fs');
-const Client = require('ftp');
 
 const halvings = require('./halvings.js');
 const inflation = require('./inflation.js');
 const coinmetrics = require('./coinmetrics.js');
 const quandl = require('./quandl.js');
 const config = require('./config.js');
-const { getSystemErrorMap } = require('util');
 
 (function () {
   console.log('init')
@@ -39,25 +37,7 @@ async function onSchedule() {
 
   console.log(`gold: ${result.gold.length} records`);
 
-  fs.writeFile('data.json', JSON.stringify(result), function (err) {
-    if (err) throw err;
+  fs.writeFileSync('data.json', JSON.stringify(result));
 
-    var ftp = config.ftp;
-
-    console.log(`ftp ${ftp.host}`);
-
-    var client = new Client();
-    client.on('ready', function() {
-      client.put('data.json', 'httpdocs/data.json', function(err) {
-        if (err) throw err;
-        client.end();
-        console.log('done');
-      });
-    }).on('error', function(error) {
-      console.log(`error: ${error}`);
-    }).on('greeting', function(msg) {
-      console.log(`greeting: ${msg}`);
-    });
-    client.connect(ftp);
-  });
+  console.log('done');
 }

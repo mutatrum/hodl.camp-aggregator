@@ -5,11 +5,6 @@ module.exports = {
     user: '',
     password: ''
   },
-  ftp: {
-    host: '',
-    user: '',
-    password: ''
-  },
   quandl: {
     key: ''
   }
